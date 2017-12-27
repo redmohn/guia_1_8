@@ -90,16 +90,36 @@ public class BD {
         return ok;
     }
 
-    public Instrumento encontrar(Integer codigo) {
-        Instrumento instrumento = null;
+    public boolean eliminar(Instrumento instrumento) {
+        boolean ok = false;
+        try {
+            if (instrumento != null) {
+                Connection conexion = conectar();
+                if (conexion != null) {
+                    PreparedStatement ps = conexion.prepareStatement("DELETE FROM instrumento  WHERE codigo=?");
+                    ps.setString(1, instrumento.getCodigo());
+                    ps.execute();
+                    ok = true;
+                    desconectar(conexion);
+                }
+            }
+        } catch (Exception e) {
+            ok = false;
+            System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
+        }
+        return ok;
+    }
 
+    public Instrumento conocerInstrumento(String codigo) {
+        Instrumento instrumento = null;
         try {
             if (codigo != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement ps = conexion.prepareStatement("SELECT * FROM instrumento WHERE codigo=?");
-                    ps.setInt(1, codigo);
-                    ResultSet rs = ps.executeQuery();
+                    PreparedStatement preparedStatement = conexion.prepareStatement("SELECT * FROM libros WHERE codigo=?");
+                    preparedStatement.setString(1, codigo);
+                    //Similar al 'existe' pero esta vez guardaremos los valores de los parámetros en un nuevo objeto
+                    ResultSet rs = preparedStatement.executeQuery();
                     if (rs != null) {
                         while (rs.next()) {
                             instrumento = new Instrumento();
@@ -107,24 +127,6 @@ public class BD {
                             instrumento.setNombre(rs.getString("nombre"));
                             instrumento.setStock(rs.getInt("stock"));
                             instrumento.setTipo(rs.getString("tipo"));
-                            if ("guitarra".equals(instrumento.getTipo())) {
-                                PreparedStatement ps2 = conexion.prepareStatement("SELECT * FROM guitarra");
-                                ResultSet rs2 = ps2.executeQuery();
-                                if (rs2 != null) {
-                                    Guitarra guitarra = new Guitarra();
-                                    guitarra.setClase(rs2.getString("clase"));
-                                    rs2.close();
-                                }
-
-                            } else if ("piano".equals(instrumento.getTipo())) {
-                                PreparedStatement ps3 = conexion.prepareStatement("SELECT * FROM piano");
-                                ResultSet rs3 = ps3.executeQuery();
-                                if (rs3 != null) {
-                                    Piano piano = new Piano();
-                                    piano.setDeCola(rs3.getBoolean("cola"));
-                                    rs3.close();
-                                }
-                            }
                         }
                         rs.close();
                     }
@@ -135,60 +137,63 @@ public class BD {
             instrumento = null;
             System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
         }
-        return instrumento; //Retornamos el objeto
+        return instrumento;
     }
 
-    public List<Instrumento> encontrarTodos() {
-        List<Instrumento> instrumentos = new ArrayList<>();
+    public Guitarra encontrarGuitarra(String codigo) {
+        Guitarra guitarra = null;
         try {
-            Connection conexion = conectar();
-            if (conexion != null) {
-                PreparedStatement ps = conexion.prepareStatement("SELECT * FROM instrumento");
-                ResultSet rs = ps.executeQuery();
-                if (rs != null) {
-                    while (rs.next()) {
-                        Instrumento instrumento = new Instrumento();
-                        instrumento.setCodigo(rs.getString("codigo"));
-                        instrumento.setNombre(rs.getString("nombre"));
-                        instrumento.setStock(rs.getInt("stock"));
-                        instrumento.setTipo(rs.getString("tipo"));
+            if (codigo != null) {
+                Connection conexion = conectar();
+                if (conexion != null) {
+                    PreparedStatement ps = conexion.prepareStatement("SELECT*FROM guitarra WHERE codigo =?");
+                    ps.setString(1, codigo);
+                    ResultSet rs = ps.executeQuery();
 
-                        if ("guitarra".equals(instrumento.getTipo())) {
-                            PreparedStatement ps2 = conexion.prepareStatement("SELECT * FROM guitarra");
-                            ResultSet rs2 = ps2.executeQuery();
-                            if (rs2 != null) {
-                                Guitarra guitarra = new Guitarra();
-                                guitarra.setClase(rs2.getString("clase"));
-
-                                instrumentos.add(1, instrumento);
-                                instrumentos.add(2, guitarra);
-
-                                rs2.close();
-                            }
-
-                        } else if ("piano".equals(instrumento.getTipo())) {
-                            PreparedStatement ps3 = conexion.prepareStatement("SELECT * FROM piano");
-                            ResultSet rs3 = ps3.executeQuery();
-                            if (rs3 != null) {
-                                Piano piano = new Piano();
-                                piano.setDeCola(rs3.getBoolean("cola"));
-
-                                instrumentos.add(1, instrumento);
-                                instrumentos.add(2, piano);
-
-                                rs3.close();
-                            }
-                        }
+                    if (rs != null) {
+                        guitarra = new Guitarra();
+                        guitarra.setCodigo(rs.getString("codigo"));
+                        guitarra.setNombre(rs.getString("nombre"));
+                        guitarra.setStock(rs.getInt("stock"));
+                        guitarra.setTipo(rs.getString("tipo"));
+                        guitarra.setClase(rs.getString("clase"));
                     }
-                    rs.close();
                 }
                 desconectar(conexion);
             }
         } catch (Exception e) {
-            instrumentos = new ArrayList<>();
+            guitarra = null;
             System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
         }
-        return instrumentos;
+        return guitarra;
+    }
+
+    public Piano encontrarPiano(Integer codigo) {
+        Piano piano = null;
+        try {
+            if (codigo != null) {
+                Connection conexion = conectar();
+                if (conexion != null) {
+                    PreparedStatement ps = conexion.prepareStatement("SELECT*FROM piano WHERE codigo =?");
+                    ps.setInt(1, codigo);
+                    ResultSet rs = ps.executeQuery();
+
+                    if (rs != null) {
+                        piano = new Piano();
+                        piano.setCodigo(rs.getString("codigo"));
+                        piano.setNombre(rs.getString("nombre"));
+                        piano.setStock(rs.getInt("stock"));
+                        piano.setTipo(rs.getString("tipo"));
+                        piano.setDeCola(rs.getBoolean("cola"));
+                    }
+                }
+                desconectar(conexion);
+            }
+        } catch (Exception e) {
+            piano = null;
+            System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
+        }
+        return piano;
     }
 
 }
