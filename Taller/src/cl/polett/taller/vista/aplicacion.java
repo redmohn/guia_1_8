@@ -3,6 +3,7 @@ package cl.polett.taller.vista;
 import cl.polett.taller.controlador.ControladorInstrumento;
 import cl.polett.taller.modelo.Guitarra;
 import cl.polett.taller.modelo.Instrumento;
+import cl.polett.taller.modelo.Piano;
 import static java.lang.Integer.parseInt;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -576,6 +577,14 @@ public class aplicacion extends javax.swing.JFrame {
         } else if ("Piano".equals(instrumento.getTipo())) { // O si el instrumento es un piano
             jComboBox3.setEnabled(false);
 
+            Piano piano = controlador.buscarPiano(codigoIngresado);
+            if (piano != null){
+                this.jTextField5.setText(piano.getCodigo());
+                this.jTextField7.setText(piano.getTipo());
+                this.jTextField8.setText(String.format("%d", piano.getStock()));
+                this.jTextField6.setText(piano.getNombre());
+                this.buttonGroup2.setSelected(null, piano.isDeCola());
+            }
         } else {
             jLabel1.setText(String.valueOf("Ingrese código válido"));
         }
