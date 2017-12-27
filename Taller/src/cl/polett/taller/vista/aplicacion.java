@@ -284,8 +284,6 @@ public class aplicacion extends javax.swing.JFrame {
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar por código", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 1, 12), new java.awt.Color(102, 102, 102))); // NOI18N
 
-        jTextField4.setText("jTextField4");
-
         jButton4.setText("Buscar");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -319,8 +317,6 @@ public class aplicacion extends javax.swing.JFrame {
 
         jLabel8.setText("codigo");
 
-        jTextField5.setText("jTextField5");
-
         jLabel9.setText("Nombre");
 
         jLabel10.setText("Clase");
@@ -331,11 +327,7 @@ public class aplicacion extends javax.swing.JFrame {
 
         jLabel13.setText("Cola");
 
-        jTextField6.setText("jTextField6");
-
-        jTextField7.setText("jTextField7");
-
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "Acústica", "Eléctrica", "Electroacústica" }));
 
         buttonGroup2.add(jRadioButton3);
         jRadioButton3.setText("SI");
@@ -352,8 +344,6 @@ public class aplicacion extends javax.swing.JFrame {
                 jRadioButton4ActionPerformed(evt);
             }
         });
-
-        jTextField8.setText("jTextField8");
 
         jButton5.setText("Guardar");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
