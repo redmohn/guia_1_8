@@ -168,14 +168,14 @@ public class BD {
         return guitarra;
     }
 
-    public Piano encontrarPiano(Integer codigo) {
+    public Piano encontrarPiano(String codigo) {
         Piano piano = null;
         try {
             if (codigo != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
                     PreparedStatement ps = conexion.prepareStatement("SELECT*FROM piano WHERE codigo =?");
-                    ps.setInt(1, codigo);
+                    ps.setString(1, codigo);
                     ResultSet rs = ps.executeQuery();
 
                     if (rs != null) {
@@ -194,6 +194,56 @@ public class BD {
             System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
         }
         return piano;
+    }
+
+    public boolean modificarGuitarra(Guitarra guitarra) {
+        boolean ok = false;
+        try {
+            if (guitarra != null) {
+                Connection conexion = conectar();
+                if (conexion != null) {
+                    PreparedStatement ps1 = conexion.prepareStatement("UPDATE guia_1_8_Taller.instrumento SET nombre=?, stock=?, tipo=? WHERE codigo=?");
+                    ps1.setString(1, guitarra.getNombre());
+                    ps1.setInt(2, guitarra.getStock());
+                    ps1.setString(3, guitarra.getTipo());
+                    ps1.setString(4, guitarra.getCodigo());
+                    ps1.execute();
+                    PreparedStatement ps2 = conexion.prepareStatement("UPDATE INTO guia_1_8_Taller.guitarra SET clase=?");
+                    ps2.setString(1, guitarra.getClase());
+                    ps2.execute();
+                    ok = true;
+                }
+            }
+        } catch (Exception e) {
+            ok = false;
+            System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
+        }
+        return ok;
+    }
+
+    public boolean modificarPiano(Piano piano) {
+        boolean ok = false;
+        try {
+            if (piano != null) {
+                Connection conexion = conectar();
+                if (conexion != null) {
+                    PreparedStatement ps1 = conexion.prepareStatement("UPDATE guia_1_8_Taller.instrumento SET nombre=?, stock=?, tipo=? WHERE codigo=?");
+                    ps1.setString(1, piano.getNombre());
+                    ps1.setInt(2, piano.getStock());
+                    ps1.setString(3, piano.getTipo());
+                    ps1.setString(4, piano.getCodigo());
+                    ps1.execute();
+                    PreparedStatement ps2 = conexion.prepareStatement("UPDATE INTO guia_1_8_Taller.piano SET cola=?");
+                    ps2.setBoolean(1, piano.isDeCola());
+                    ps2.execute();
+                    ok = true;
+                }
+            }
+        } catch (Exception e) {
+            ok = false;
+            System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
+        }
+        return ok;
     }
 
 }

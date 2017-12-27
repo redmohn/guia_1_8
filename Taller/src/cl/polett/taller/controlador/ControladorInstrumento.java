@@ -45,11 +45,45 @@ public class ControladorInstrumento {
         Instrumento instrumento = bd.conocerInstrumento(codigo);
         return instrumento;
     }
-    
-    public Guitarra buscarGuitarra(String codigo){
+
+    public Guitarra buscarGuitarra(String codigo) {
         BD bd = new BD();
         Guitarra guitarra = bd.encontrarGuitarra(codigo);
         return guitarra;
+    }
+
+    public Piano buscarPiano(String codigo) {
+        BD bd = new BD();
+        Piano piano = bd.encontrarPiano(codigo);
+        return piano;
+    }
+    
+        public boolean modificarGuitarra(String clase, String codigo, String nombre, Integer stock, String tipo) {
+        Guitarra guitarra = new Guitarra();
+
+        guitarra.setClase(clase);
+        guitarra.setCodigo(codigo);
+        guitarra.setNombre(nombre);
+        guitarra.setStock(stock);
+        guitarra.setTipo(tipo);
+
+        BD bd = new BD();
+        boolean ok = bd.modificarGuitarra(guitarra);
+        return ok;
+    }
+    
+        public boolean modificarPiano(boolean deCola, String codigo, String nombre, Integer stock, String tipo) {
+        Piano piano = new Piano();
+
+        piano.setDeCola(deCola);
+        piano.setCodigo(codigo);
+        piano.setNombre(nombre);
+        piano.setStock(stock);
+        piano.setTipo(tipo);
+
+        BD bd = new BD();
+        boolean ok = bd.modificarPiano(piano);
+        return ok;
     }
 
     /*

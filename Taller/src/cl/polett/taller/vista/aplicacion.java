@@ -16,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 public class aplicacion extends javax.swing.JFrame {
 
     private boolean cola = false;
+    private boolean modificarCola = false;
 
     public aplicacion() {
         initComponents();
@@ -338,13 +339,28 @@ public class aplicacion extends javax.swing.JFrame {
 
         buttonGroup2.add(jRadioButton3);
         jRadioButton3.setText("SI");
+        jRadioButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton3ActionPerformed(evt);
+            }
+        });
 
         buttonGroup2.add(jRadioButton4);
         jRadioButton4.setText("NO");
+        jRadioButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jRadioButton4ActionPerformed(evt);
+            }
+        });
 
         jTextField8.setText("jTextField8");
 
         jButton5.setText("Guardar");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -578,19 +594,63 @@ public class aplicacion extends javax.swing.JFrame {
             jComboBox3.setEnabled(false);
 
             Piano piano = controlador.buscarPiano(codigoIngresado);
-            if (piano != null){
+            if (piano != null) {
                 this.jTextField5.setText(piano.getCodigo());
                 this.jTextField7.setText(piano.getTipo());
                 this.jTextField8.setText(String.format("%d", piano.getStock()));
                 this.jTextField6.setText(piano.getNombre());
-                this.buttonGroup2.setSelected(null, piano.isDeCola());
+
+                if (piano.isDeCola() == true) {
+                    this.jRadioButton3.isSelected();
+                } else if (piano.isDeCola() == false) {
+                    this.jRadioButton4.isSelected();
+                }
             }
         } else {
             jLabel1.setText(String.valueOf("Ingrese código válido"));
         }
-
-
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    // BOTON GUARDAR - MODIFICAR
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        ControladorInstrumento controlador = new ControladorInstrumento();
+
+        if (this.jTextField7.getText() == "Guitarra") {
+            boolean modificar = controlador.modificarGuitarra(
+                    this.jComboBox3.getSelectedItem().toString(), // clase
+                    this.jTextField5.getText(), // código
+                    this.jTextField6.getText(), // nombre
+                    parseInt(this.jTextField8.getText()),
+                    this.jTextField7.getText()); //tipo
+            if (modificar) {
+                JOptionPane.showMessageDialog(null, "Instrumento agregado");
+            } else {
+                JOptionPane.showMessageDialog(null, "Instrumento no agregado");
+            }
+
+        } else if (this.jTextField7.getText() == "Piano") {
+            boolean modificar = controlador.modificarPiano(                                 
+                    this.modificarCola, // cola
+                    this.jTextField5.getText(), // código 
+                    this.jTextField6.getText(), // nombre 
+                    parseInt(this.jTextField8.getText()), // stock
+                    this.jTextField7.getText()); // tipo
+            if (modificar) {
+                JOptionPane.showMessageDialog(null, "Instrumento agregado");
+            } else {
+                JOptionPane.showMessageDialog(null, "Instrumento no agregado");
+            }
+
+        }
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jRadioButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton3ActionPerformed
+        this.modificarCola = true;
+    }//GEN-LAST:event_jRadioButton3ActionPerformed
+
+    private void jRadioButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRadioButton4ActionPerformed
+        this.modificarCola = false;
+    }//GEN-LAST:event_jRadioButton4ActionPerformed
 
     /**
      * @param args the command line arguments
