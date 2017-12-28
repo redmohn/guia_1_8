@@ -46,14 +46,15 @@ public class BD {
             if (guitarra != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement ps1 = conexion.prepareStatement("INSERT INTO guia_1_8_Taller.instrumento(codigo, nombre, stock, tipo) VALUES (?,?,?,?)");
+                    PreparedStatement ps1 = conexion.prepareStatement("INSERT INTO instrumento(codigo, nombre, stock) VALUES (?,?,?)");
                     ps1.setString(1, guitarra.getCodigo());
                     ps1.setString(2, guitarra.getNombre());
                     ps1.setInt(3, guitarra.getStock());
-                    ps1.setString(4, guitarra.getTipo());
                     ps1.execute();
-                    PreparedStatement ps2 = conexion.prepareStatement("INSERT INTO guia_1_8_Taller.guitarra(clase) VALUES (?)");
-                    ps2.setString(1, guitarra.getClase());
+
+                    PreparedStatement ps2 = conexion.prepareStatement("INSERT INTO guitarra(codigo, clase) VALUES (?, ?)");
+                    ps2.setString(1, guitarra.getCodigo());
+                    ps2.setString(2, guitarra.getClase());
                     ps2.execute();
                     ok = true;
                 }
@@ -71,13 +72,14 @@ public class BD {
             if (piano != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement ps1 = conexion.prepareStatement("INSERT INTO guia_1_8_taller.instrumento(codigo, nombre, stock, tipo) VALUES (?,?,?,?)");
+                    PreparedStatement ps1 = conexion.prepareStatement("INSERT INTO instrumento(codigo, nombre, stock) VALUES (?,?,?)");
                     ps1.setString(1, piano.getCodigo());
                     ps1.setString(2, piano.getNombre());
                     ps1.setInt(3, piano.getStock());
-                    ps1.setString(4, piano.getTipo());
                     ps1.execute();
-                    PreparedStatement ps2 = conexion.prepareStatement("INSERT INTO guia_1_8_taller.piano(cola) VALUES (?)");
+
+                    PreparedStatement ps2 = conexion.prepareStatement("INSERT INTO piano(codigo, cola) VALUES (?, ?)");
+                    ps2.setString(1, piano.getCodigo());
                     ps2.setBoolean(1, ok);
                     ps2.execute();
                     ok = true;
@@ -116,17 +118,16 @@ public class BD {
             if (codigo != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement preparedStatement = conexion.prepareStatement("SELECT * FROM libros WHERE codigo=?");
+                    PreparedStatement preparedStatement = conexion.prepareStatement("SELECT codigo, nombre, stock FROM instrumento WHERE codigo=?");
                     preparedStatement.setString(1, codigo);
                     //Similar al 'existe' pero esta vez guardaremos los valores de los parámetros en un nuevo objeto
                     ResultSet rs = preparedStatement.executeQuery();
                     if (rs != null) {
-                        while (rs.next()) {
+                        if (rs.next()) {
                             instrumento = new Instrumento();
                             instrumento.setCodigo(rs.getString("codigo"));
                             instrumento.setNombre(rs.getString("nombre"));
                             instrumento.setStock(rs.getInt("stock"));
-                            instrumento.setTipo(rs.getString("tipo"));
                         }
                         rs.close();
                     }
@@ -140,23 +141,53 @@ public class BD {
         return instrumento;
     }
 
+    public List<Instrumento> conocerInstrumentos() {
+        List<Instrumento> instrumentos = new ArrayList<>();
+        try {
+
+            Connection conexion = conectar();
+            if (conexion != null) {
+                PreparedStatement preparedStatement = conexion.prepareStatement("SELECT codigo, nombre, stock FROM instrumento");
+                //Similar al 'existe' pero esta vez guardaremos los valores de los parámetros en un nuevo objeto
+                ResultSet rs = preparedStatement.executeQuery();
+                if (rs != null) {
+                    while (rs.next()) {
+                        Instrumento instrumento = new Instrumento();
+                        instrumento.setCodigo(rs.getString("codigo"));
+                        instrumento.setNombre(rs.getString("nombre"));
+                        instrumento.setStock(rs.getInt("stock"));
+                        instrumentos.add(instrumento);
+                    }
+                    rs.close();
+                }
+                desconectar(conexion);
+            }
+
+        } catch (Exception e) {
+            instrumentos = new ArrayList<>();
+            System.err.println(String.format("Ha ocurrido error: %s", e.toString()));
+        }
+        return instrumentos;
+    }
+
     public Guitarra encontrarGuitarra(String codigo) {
         Guitarra guitarra = null;
         try {
             if (codigo != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement ps = conexion.prepareStatement("SELECT*FROM guitarra WHERE codigo =?");
+                    PreparedStatement ps = conexion.prepareStatement("SELECT instrumento.codigo AS codigo, instrumento.nombre AS nombre, instrumento.stock AS stock, guitarra.clase AS clase FROM guitarra INNER JOIN instrumento ON instrumento.codigo=guitarra.codigo WHERE guitarra.codigo = ?");
                     ps.setString(1, codigo);
                     ResultSet rs = ps.executeQuery();
 
                     if (rs != null) {
-                        guitarra = new Guitarra();
-                        guitarra.setCodigo(rs.getString("codigo"));
-                        guitarra.setNombre(rs.getString("nombre"));
-                        guitarra.setStock(rs.getInt("stock"));
-                        guitarra.setTipo(rs.getString("tipo"));
-                        guitarra.setClase(rs.getString("clase"));
+                        if (rs.next()) {
+                            guitarra = new Guitarra();
+                            guitarra.setCodigo(rs.getString("codigo"));
+                            guitarra.setNombre(rs.getString("nombre"));
+                            guitarra.setStock(rs.getInt("stock"));
+                            guitarra.setClase(rs.getString("clase"));
+                        }
                     }
                 }
                 desconectar(conexion);
@@ -174,17 +205,19 @@ public class BD {
             if (codigo != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement ps = conexion.prepareStatement("SELECT*FROM piano WHERE codigo =?");
+
+                    PreparedStatement ps = conexion.prepareStatement("SELECT instrumento.codigo AS codigo, instrumento.nombre AS nombre, instrumento.stock AS stock, piano.cola AS cola FROM piano INNER JOIN instrumento ON instrumento.codigo=piano.codigo WHERE piano.codigo = ?");
                     ps.setString(1, codigo);
                     ResultSet rs = ps.executeQuery();
 
                     if (rs != null) {
-                        piano = new Piano();
-                        piano.setCodigo(rs.getString("codigo"));
-                        piano.setNombre(rs.getString("nombre"));
-                        piano.setStock(rs.getInt("stock"));
-                        piano.setTipo(rs.getString("tipo"));
-                        piano.setDeCola(rs.getBoolean("cola"));
+                        if (rs.next()) {
+                            piano = new Piano();
+                            piano.setCodigo(rs.getString("codigo"));
+                            piano.setNombre(rs.getString("nombre"));
+                            piano.setStock(rs.getInt("stock"));
+                            piano.setDeCola(rs.getBoolean("cola"));
+                        }
                     }
                 }
                 desconectar(conexion);
@@ -202,14 +235,16 @@ public class BD {
             if (guitarra != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement ps1 = conexion.prepareStatement("UPDATE guia_1_8_Taller.instrumento SET nombre=?, stock=?, tipo=? WHERE codigo=?");
+                    PreparedStatement ps1 = conexion.prepareStatement("UPDATE instrumento SET nombre=?, stock=? WHERE codigo=?");
                     ps1.setString(1, guitarra.getNombre());
                     ps1.setInt(2, guitarra.getStock());
-                    ps1.setString(3, guitarra.getTipo());
-                    ps1.setString(4, guitarra.getCodigo());
+                    ps1.setString(3, guitarra.getCodigo());
                     ps1.execute();
-                    PreparedStatement ps2 = conexion.prepareStatement("UPDATE INTO guia_1_8_Taller.guitarra SET clase=?");
+
+                    PreparedStatement ps2 = conexion.prepareStatement("UPDATE guitarra SET clase=? WHERE codigo=?");
+
                     ps2.setString(1, guitarra.getClase());
+                    ps2.setString(2, guitarra.getCodigo());
                     ps2.execute();
                     ok = true;
                 }
@@ -227,14 +262,15 @@ public class BD {
             if (piano != null) {
                 Connection conexion = conectar();
                 if (conexion != null) {
-                    PreparedStatement ps1 = conexion.prepareStatement("UPDATE guia_1_8_Taller.instrumento SET nombre=?, stock=?, tipo=? WHERE codigo=?");
+                    PreparedStatement ps1 = conexion.prepareStatement("UPDATE instrumento SET nombre=?, stock=? WHERE codigo=?");
                     ps1.setString(1, piano.getNombre());
                     ps1.setInt(2, piano.getStock());
-                    ps1.setString(3, piano.getTipo());
-                    ps1.setString(4, piano.getCodigo());
+                    ps1.setString(3, piano.getCodigo());
                     ps1.execute();
-                    PreparedStatement ps2 = conexion.prepareStatement("UPDATE INTO guia_1_8_Taller.piano SET cola=?");
-                    ps2.setBoolean(1, piano.isDeCola());
+
+                    PreparedStatement ps2 = conexion.prepareStatement("UPDATE piano SET cola=? WHERE codigo=?");
+                    ps2.setBoolean(1, ok);
+                    ps2.setString(2, piano.getCodigo());
                     ps2.execute();
                     ok = true;
                 }
